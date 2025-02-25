@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/result.css') }}"
+    />
+    <title>Heart Disease Prediction</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      function printReport() {
+        document.body.classList.add("print-mode");
+        window.print();
+        document.body.classList.remove("print-mode");
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Left Side: Full Report -->
+      <div class="report-section">
+        <div class="header">
+          <h1>Heart Disease Prediction Report</h1>
+
+        </div>
+        <div class="details">
+          <h2>{{ result[2][0] }}</h2>
+          <p>{{ result[2][1] }}</p>
+          <hr />
+        </div>
+
+        <h3>Patient Details:</h3>
+        <p id="name"></p>
+        <p id="email"></p>
+
+        <hr />
+        <h3>Details Entered:</h3>
+        <table>
+          {% for key, value in result[0].items() %}
+          <tr>
+            <th>{{ key }}</th>
+            <td>{{ value }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+
+        <hr />
+        <button id="printButton" onclick="printReport()">Download Report</button>
+      </div>
+
+      <!-- Right Side: Pie Chart (Top) & Algorithm Comparison (Bottom) -->
+      <div class="right-section">
+        <!-- Top Right: Pie Chart -->
+        <div class="chart-section">
+          <h3>Prediction Probability</h3>
+          <canvas id="predictionChart"></canvas>
+          <p id="predictionPercentage" class="prediction-text"></p>
+        </div>
+
+        <!-- Bottom Right: Algorithm Comparison Table -->
+        <div class="comparison-section">
+          <h3>Algorithm Comparison</h3>
+          <table>
+            {% for key, value in result[1].items() %}
+            <tr>
+              <th>{{ key }}</th>
+              <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    document.getElementById("name").textContent = "Name: " + localStorage.getItem("name");
+    document.getElementById("email").textContent = "Email: " + localStorage.getItem("email");
+
+    // Assign Jinja variable safely
+    let diseaseProbability = Number("{{ result[3] * 100 }}");
+    let noDiseaseProbability = 100 - diseaseProbability;
+
+    // Update prediction text
+    document.getElementById("predictionPercentage").textContent =
+      "Risk of Heart Disease: " + diseaseProbability.toFixed(2) + "%";
+
+    // Generate Pie Chart
+    let ctx = document.getElementById("predictionChart").getContext("2d");
+    new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: ["Heart Disease Risk", "No Heart Disease"],
+        datasets: [
+          {
+            data: [diseaseProbability, noDiseaseProbability],
+            backgroundColor: ["#d9534f", "#5cb85c"],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom",
+          },
+        },
+      },
+    });
+  </script>
+</html>
