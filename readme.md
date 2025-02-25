@@ -35,6 +35,3 @@ Before you run the Flask application please run the below command:
 **Tools:** VSCode,jupyter notebook
 **Libraries:** NumPy,Pandas,Matplotlib
 
-Happy Learning
-
-Team VTUPulse.com
